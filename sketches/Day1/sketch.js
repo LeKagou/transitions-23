@@ -121,7 +121,7 @@ window.draw = function () {
             col = 0;
             return;
         }
-        col -= 1;
+        col -= 3;
         console.log(col);
         console.log(r);
         console.log(rotM);
