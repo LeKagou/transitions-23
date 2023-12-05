@@ -10,23 +10,31 @@ let mouseDragState = false;
 let figerTrait1 = false;
 let figerTrait2 = false;
 
+let zone = false;
+
 
 const springCircle = new SpringNumber({
 	position: 500, // start position
-	frequency: 2, // oscillations per second (approximate)
-	halfLife: 0.10 // time until amplitude is halved
+	frequency: 1.5, // oscillations per second (approximate)
+	halfLife: 0.1 // time until amplitude is halved
 })
 
 const springX = new SpringNumber({
 	position: window.innerWidth / 2, // start position
-	frequency: 2, // oscillations per second (approximate)
-	halfLife: 0.5 // time until amplitude is halved
+	frequency: 1.5, // oscillations per second (approximate)
+	halfLife: 0.1 // time until amplitude is halved
 })
 
 const springY = new SpringNumber({
 	position: window.innerHeight / 2, // start position
-	frequency: 2, // oscillations per second (approximate)
-	halfLife: 0.5 // time until amplitude is halved
+	frequency: 1.5, // oscillations per second (approximate)
+	halfLife: 0.1 // time until amplitude is halved
+})
+
+const springCol = new SpringNumber({
+	position: window.innerHeight / 2, // start position
+	frequency: 1.5, // oscillations per second (approximate)
+	halfLife: 0.1 // time until amplitude is halved
 })
 
 
@@ -47,20 +55,30 @@ window.mouseClicked = function (){
   }
 }
 
-let posMX = 0;
-let posMY = 0;;
-
 window.mouseDragged = function (){
 
   if(stage == 2 || stage == 3)
   {
     mouseDragState = true;
   }
+  let d = dist(window.innerWidth / 2, window.innerHeight / 2, mouseX, mouseY);
+  if(d >= 300 && !figerTrait2){ 
+    zone = true;
+    springCol.target = 1 * d / 2;
+    console.log(zone)
+  }
+  else
+  {
+    springCol.target = 0;
+    zone = false;
+  }
 }
 
 window.mouseReleased = function (){ 
 
   let d = dist(window.innerWidth / 2, window.innerHeight / 2, mouseX, mouseY);
+  zone = false;
+  springCol.target = 0;
   
   if(stage == 2 && d >= 300){
     figerTrait1 = true;
@@ -88,10 +106,11 @@ window.draw = function () {
   springX.step(deltaTime / 1000) // deltaTime is in milliseconds, we need it in seconds
   springY.step(deltaTime / 1000) // deltaTime is in milliseconds, we need it in seconds
   springCircle.step(deltaTime / 1000) // deltaTime is in milliseconds, we need it in seconds
-
+  springCol.step(deltaTime / 1000)
 	const x = springX.position
   const y = springY.position
   const sCircle = springCircle.position;
+  const springC = springCol.position;
 
   //cross(centerX,centerY,strokeW);
 
@@ -109,6 +128,7 @@ window.draw = function () {
       break;
     case 2:
       //Déplacement des lignes Horizontales et Verticales
+      circleShape(centerX,centerY);
       if(mouseDragState && !figerTrait1)
       {
         springY.target = mouseY
@@ -125,11 +145,18 @@ window.draw = function () {
         }, 1500);
       }
       push()
+      if(zone == true)
+      {
+        stroke(springC, 0, 0);
+      }
+      else
+      {
+        stroke(springC, 0, 0);
+      }
       strokeWeight(strokeW);
       line(centerX, centerY, centerX, y);
       line(centerX, centerY, centerX, window.innerHeight - y);
       pop()
-      circleShape(centerX,centerY);
       break;
       
     case 3:{
@@ -159,6 +186,14 @@ window.draw = function () {
       }
 
       push()
+      if(zone == true)
+      {
+        stroke(springC, 0, 0);
+      }
+      else
+      {
+        stroke(springC, 0, 0);
+      }
       strokeWeight(strokeW);
       line(centerX, centerY, x, centerY);
       line(centerX, centerY, window.innerWidth - x, centerY);
@@ -173,6 +208,7 @@ window.draw = function () {
       pop()*/
     }
   }
+
 
 }
 
