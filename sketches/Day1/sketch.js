@@ -5,12 +5,14 @@ let r = 0;
 let rotSave = 0;
 let mousePress = false;
 
-
+let coolDownSound;
+let playS = false;
 
 window.setup = function () {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES)
     frameRate(60);
+    coolDownSound = loadSound("Audio/CoolDown.wav")
 }
 
 window.windowResized = function () {
@@ -108,6 +110,11 @@ window.draw = function () {
             rect(0, 0, objSize, objSize,C1,C2,C3,C4);
             break;
         case 1:
+            if(playS == false)
+            {
+                coolDownSound.play();
+                playS = true;
+            }
             setTimeout(() => {
                 colC.target = 0
             }, 500);
