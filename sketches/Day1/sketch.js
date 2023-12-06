@@ -1,169 +1,174 @@
 import { SpringNumber } from "../../shared/spring.js"
 
-const spring = new SpringNumber({
-	position: 0, // start position
-	frequency: 1, // oscillations per second (approximate)
-	halfLife: 0.15 // time until amplitude is halved
-})
-
-
-let shapeId = 0
-let rotateOnOff = false;
-let rotM = 0;
-let r = 0
-let col = 0;
-
-let roundRadius = 0;
 let maxRadius;
-let OK = false;
+let r = 0;
+let rotSave = 0;
+let mousePress = false;
+
 
 
 window.setup = function () {
-
     createCanvas(windowWidth, windowHeight);
-    spring.step(deltaTime / 1) 
-    spring.target = 1
     angleMode(DEGREES)
-    frameCount = 60;
+    frameRate(60);
 }
 
 window.windowResized = function () {
     resizeCanvas(windowWidth, windowHeight);
 }
 
-
 window.mousePressed = function () {
-    rotateOnOff = true;
-    spring.target = 0.5
+    mousePress = true;
+    if(timeKeeper > 0)
+    {
+        changerDeForme = true
+    }
+    else
+    {
+        setTimeout(() => {
+            changerDeForme = true
+        }, 1000);
+    }
 }
 
 window.mouseReleased = function () {
-    rotateOnOff = false;
-    spring.target = 1
+    mousePress = false;
+    changerDeForme = true
+    stopTimer();
 }
 
-let corner1 = 0;
-let corner2= 0;
-var corner3= 0;
-let corner4= 0;
+const c1 = new SpringNumber({
+	position: 0, // start position
+	frequency: 2, // oscillations per second (approximate)
+	halfLife: 0.05 // time until amplitude is halved
+})
+
+const c2 = new SpringNumber({
+	position: 0, // start position
+	frequency: 2, // oscillations per second (approximate)
+	halfLife: 0.05 // time until amplitude is halved
+})
+
+const c3 = new SpringNumber({
+	position: 0, // start position
+	frequency: 2, // oscillations per second (approximate)
+	halfLife: 0.05 // time until amplitude is halved
+})
+
+const c4 = new SpringNumber({
+	position: 0, // start position
+	frequency: 2, // oscillations per second (approximate)
+	halfLife: 0.05 // time until amplitude is halved
+})
+
+const colC = new SpringNumber({
+	position: 255, // start position
+	frequency: 1, // oscillations per second (approximate)
+	halfLife: 0.1 // time until amplitude is halved
+})
+
+var timer = 0;
+var timeKeeper = 0;
+var changerDeForme = false;
+let stage = 0;
+let rSave = 0;
+let col = 0;
 
 window.draw = function () {
+    
+    background(255);
 
     const sceneSize = min(width, height)
 
-	spring.step(deltaTime / 10000) // deltaTime is in milliseconds, we need it in seconds
-    const x = spring.position
+	c1.step(deltaTime / 1000) // deltaTime is in milliseconds, we need it in seconds
+    c2.step(deltaTime / 1000)
+    c3.step(deltaTime / 1000)
+    c4.step(deltaTime / 1000)
+    colC.step(deltaTime / 1000)
+    const C1 = c1.position
+    const C2 = c2.position
+    const C3 = c3.position
+    const C4 = c4.position
+
+    const ColCircle  = colC.position
 
     const centerX = width / 2
     const centerY = height / 2
     const objSize = sceneSize / 2
     maxRadius = objSize / 2
-    
-
-    background(255);
-
-    SpeedManager();
 
     noStroke()
     rectMode(CENTER)
-    push();
     translate(centerX, centerY);
-    rotate((r+=rotM));
-    //scale(x);
-    fill(col, col / 5,0)
-
-    rect(0, 0, objSize, objSize, corner1, corner2, corner3, corner4);
-
-    if(!OK)
+    rotate(rSave += timeKeeper / 20);
+    fill(col,0,0)
+    switch(stage)
     {
-        corner1 = roundRadius +(random(0,50)*rotM / 5);
-        corner2 = roundRadius +(random(0,50)*rotM / 5);
-        corner3 = roundRadius +(random(0,50)*rotM / 5);
-        corner4 = roundRadius +(random(0,50)*rotM / 5);
+        case 0:
+            rect(0, 0, objSize, objSize,C1,C2,C3,C4);
+            break;
+        case 1:
+            setTimeout(() => {
+                colC.target = 0
+            }, 500);
+            console.log("cercle")
+            fill(ColCircle,0,0)
+            noStroke()
+            circle(0, 0, objSize)
+            break;
+    }
+
+    if(mousePress)
+    {
+        timeKeeper++;
+        if(timeKeeper >= 450)
+        {
+            stage = 1;
+        }
+        if(timeKeeper >= 100)
+        {
+            col+=1;
+        }
     }
     else
     {
-        if(corner1 > 0)
+        timeKeeper--;
+        col-=1;
+        if(timeKeeper < 0)
         {
-            corner1-= 0.01;
+            timeKeeper = 0;
         }
-        else if(corner2 > 0)
-        {
-            corner2-=0.01;
-        }
-        else if(corner3 > 0)
-        {
-            corner3-=0.01;
-        }
-        else if(corner4 > 0)
-        {
-            corner4-=0.01;
-        }
-        else{
-            corner1 = 0;
-            corner2 = 0;
-            corner3 = 0;
-            corner4 = 0;
-        }
-        corner1 = roundRadius + corner1;
-        corner2 = roundRadius + corner2;
-        corner3 = roundRadius + corner3;
-        corner4 = roundRadius + corner4;
     }
 
-    if(roundRadius >= maxRadius - 20 && !OK)
+    console.log(timeKeeper)
+
+    if(changerDeForme == true)
     {
-        OK = true;
-    }
-    if(OK){
-        if(col <= 0)
-        {
-            col = 0;
-            return;
+        if(mousePress == true){
+            timer += 1
+            if(timer >= 10)
+            {
+                c1.target = random(10,100) * timeKeeper / 60
+                c2.target = random(10,100) * timeKeeper / 60
+                c3.target = random(10,100) * timeKeeper / 60
+                c4.target = random(10,100) * timeKeeper / 60
+                timer = 0;
+            }
         }
-        col -= 3;
-        console.log(col);
-        console.log(r);
-        console.log(rotM);
+        else
+        {
+            changerDeForme = false;
+            c1.target = 0.1
+            c2.target = 0.1
+            c3.target = 0.1
+            c4.target = 0.1
+        }
     }
-    pop();
+}
 
+function stopTimer(){
 
 }
 
-function SpeedManager(){
-    switch (rotateOnOff){
-        case true:
-            if(OK)
-            {
-                break;
-            }
-            rotM += 0.05;
-            roundRadius += 0.5;
-            if(rotM > 10)
-            {
-                col += 1;
-            }
-            break;
-        case false:
-            if(OK)
-            {
-                break;
-            }
-            if(rotM <= 0.1)
-            {
-                rotM = 0;
-                roundRadius = 0;
-                break;
-            }
-            rotM -= 0.05;
-            roundRadius -= 0.5;
-            if(col <= 0)
-            {
-                col = 0;
-                break;
-            }
-            col -= 1;
-            break;
-    }
-}
+
+
