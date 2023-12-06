@@ -12,6 +12,10 @@ let figerTrait2 = false;
 
 let zone = false;
 
+let sphereSound;
+let linePickSound;
+let lineReleaseSound;
+
 
 const springCircle = new SpringNumber({
 	position: 500, // start position
@@ -39,9 +43,23 @@ const springCol = new SpringNumber({
 
 
 window.setup = function () {
+
+  sphereSound = loadSound('Audio/SphereClick.wav');
+  linePickSound = loadSound('Audio/LinePick.wav');
+  lineReleaseSound = loadSound('Audio/LineReleased.wav');
+
   createCanvas(windowWidth, windowHeight);
   sceneSize = min(width, height)
   objSize = sceneSize / 2;
+}
+
+window.mousePressed = function () {
+
+  if(stage == 1 || stage == 2 || stage == 3)
+  {
+    linePickSound.play();
+  }
+
 }
 
 window.windowResized = function () {
@@ -51,6 +69,7 @@ window.windowResized = function () {
 window.mouseClicked = function (){
   if(stage == 0){
     stage = 1;
+    sphereSound.play();
     springCircle.target = 20;
   }
 }
@@ -79,6 +98,11 @@ window.mouseReleased = function (){
   let d = dist(window.innerWidth / 2, window.innerHeight / 2, mouseX, mouseY);
   zone = false;
   springCol.target = 0;
+
+  if(stage == 2 || stage == 3)
+  {
+    lineReleaseSound.play();
+  }
   
   if(stage == 2 && d >= 300){
     figerTrait1 = true;
@@ -89,6 +113,8 @@ window.mouseReleased = function (){
     figerTrait2 = true;
     d = 0;
   }
+
+
 
   mouseDragState = false;
 }
