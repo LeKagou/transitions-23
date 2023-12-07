@@ -9,6 +9,9 @@ let objSize = sceneSize / 2
 
 let stageSketch4 = 0;
 
+let inSound;
+let outSound;
+
 
 window.setup = function () {
 	createCanvas(windowWidth, windowHeight);
@@ -18,6 +21,8 @@ window.setup = function () {
 	objSize = sceneSize / 2;
 	gridSquares();
 	BlackSquare = [];
+	inSound = loadSound('Audio/In.wav');
+	outSound = loadSound('Audio/Out.wav');
 }
 
 window.windowResized = function () {
@@ -157,6 +162,7 @@ class Square{
 			BlackSquare.shift(this.id);
 			this.Spring.target = 255;
 			console.log(this.id)
+			outSound.play()
 			setTimeout(() => {
 				this.mouseIsIn = false;
 			}, 500);
@@ -173,6 +179,7 @@ class Square{
 					this.Spring.target = 0;
 					console.log(this.id)
 					console.log(BlackSquare.length)
+					inSound.play()
 				}
 				this.mouseIsIn = true;
 		}
