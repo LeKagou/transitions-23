@@ -1,9 +1,13 @@
+;;;
+
 import { SpringNumber } from "../../shared/spring.js"
+import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
+
 
 let sceneSize;
 let objSize;
 let objSizeCircle;
-let stage = 0;
+let stageSketch2 = 0;
 let differentiel = 0;
 let mouseDragState = false;
 
@@ -51,11 +55,13 @@ window.setup = function () {
   createCanvas(windowWidth, windowHeight);
   sceneSize = min(width, height)
   objSize = sceneSize / 2;
+
+  stageSketch2 = 0;
 }
 
 window.mousePressed = function () {
 
-  if(stage == 1 || stage == 2 || stage == 3)
+  if(stageSketch2 == 1 || stageSketch2 == 2 || stageSketch2 == 3)
   {
     linePickSound.play();
   }
@@ -67,8 +73,8 @@ window.windowResized = function () {
 }
 
 window.mouseClicked = function (){
-  if(stage == 0){
-    stage = 1;
+  if(stageSketch2 == 0){
+    stageSketch2 = 1;
     sphereSound.play();
     springCircle.target = 20;
   }
@@ -76,7 +82,7 @@ window.mouseClicked = function (){
 
 window.mouseDragged = function (){
 
-  if(stage == 2 || stage == 3)
+  if(stageSketch2 == 2 || stageSketch2 == 3)
   {
     mouseDragState = true;
   }
@@ -99,18 +105,23 @@ window.mouseReleased = function (){
   zone = false;
   springCol.target = 0;
 
-  if(stage == 2 || stage == 3)
+  if(stageSketch2 == 2 || stageSketch2 == 3)
   {
     lineReleaseSound.play();
   }
   
-  if(stage == 2 && d >= 300){
+  if(stageSketch2 == 2 && d >= 300){
     figerTrait1 = true;
     springX.position = window.innerWidth / 2;
     d = 0;
   }
-  else if(stage == 3 && d >= 300){
+  else if(stageSketch2 == 3 && d >= 300){
     figerTrait2 = true;
+    stageSketch2 = 3;
+    setTimeout(() => {
+      noLoop();
+       sendSequenceNextSignal();
+    }, 1500);
     d = 0;
   }
 
@@ -140,7 +151,7 @@ window.draw = function () {
 
   //cross(centerX,centerY,strokeW);
 
-  switch(stage){
+  switch(stageSketch2){
     case 0:
       //Cercle Statique
       circleShape(centerX,centerY);
@@ -149,8 +160,8 @@ window.draw = function () {
       //Cercle qui raptisse
       circleShape(centerX,centerY);
       setTimeout(function() {
-        stage = 2;
-      }, 1500);
+        stageSketch2 = 2;
+      }, 1000);
       break;
     case 2:
       //Déplacement des lignes Horizontales et Verticales
@@ -167,8 +178,8 @@ window.draw = function () {
       {
         springY.target = centerY + objSize / 2
         setTimeout(function() {
-          stage = 3;
-        }, 1500);
+          stageSketch2 = 3;
+        }, 500);
       }
       push()
       if(zone == true)
@@ -206,9 +217,6 @@ window.draw = function () {
       if(figerTrait2)
       {
         springX.target = centerX - objSize / 2
-        setTimeout(function() {
-          //stage = 4;
-        }, 1500);
       }
 
       push()
@@ -265,3 +273,5 @@ function cross(cX,cY,sW){
   line(cX - objSize / 2, cY, cX + objSize / 2, cY)
   line(cX, cY - objSize / 2, cX, cY + objSize / 2)
 }
+
+;;;

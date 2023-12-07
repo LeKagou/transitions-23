@@ -1,3 +1,5 @@
+;;;
+
 import { SpringNumber } from "../../shared/spring.js"
 import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
 
@@ -5,7 +7,7 @@ let sceneSize;
 const strokeW = 20
 let objSize = sceneSize / 2
 
-let stage = 0;
+let stageSketch4 = 0;
 
 
 window.setup = function () {
@@ -79,13 +81,13 @@ window.draw = function () {
 	let sR = SpringRect.position;
 	let sG = SpringGrid.position;
 
-	switch (stage) {
+	switch (stageSketch4) {
 		case 0:
 
 			if(BlackSquare.length == 16)
 			{
 				setTimeout(() => {
-					stage = 1;
+					stageSketch4 = 1;
 				}, 1000);
 			}
 
@@ -123,6 +125,11 @@ window.draw = function () {
 			basicGrid();
 			pop();
 
+			setTimeout(() => {
+				noLoop();
+				 sendSequenceNextSignal();
+			  }, 1000);
+
 			break;
 	}
 }
@@ -138,8 +145,8 @@ class Square{
 		this.col = 0;
 		this.Spring = new SpringNumber({
 			position: 0, // start position
-			frequency: 1, // oscillations per second (approximate)
-			halfLife: 0.15 // time until amplitude is halved
+			frequency: 10, // oscillations per second (approximate)
+			halfLife: 0.1 // time until amplitude is halved
 		})
 		this.id;
 
@@ -153,7 +160,7 @@ class Square{
 			setTimeout(() => {
 				this.mouseIsIn = false;
 			}, 500);
-		}, 300 * this.id);
+		}, 100 * this.id);
 	}
 
 	isInMe(mouseX, mouseY) {
@@ -172,7 +179,7 @@ class Square{
     }
 	draw(){
 
-		this.Spring.step(deltaTime / 1000)
+		this.Spring.step(deltaTime / 10)
 		this.col = this.Spring.position;
 
 		if(!this.mouseIsIn){
@@ -221,3 +228,5 @@ function basicGrid(){
 		}
 	}
 }
+
+;;;

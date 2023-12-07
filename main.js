@@ -6,9 +6,10 @@ const emptySequence = [
 ]
 
 const exampleSequence = [
-    "sketches/example-sequence-1",
-    "sketches/example-sequence-2",
-    "sketches/example-sequence-3"
+    "sketches/Day1",
+    "sketches/Day2",
+    "sketches/Day3",
+    "sketches/Day4"
 ]
 
 runSequence(exampleSequence)

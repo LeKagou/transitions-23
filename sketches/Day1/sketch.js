@@ -1,4 +1,5 @@
 import { SpringNumber } from "../../shared/spring.js"
+import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
 
 let maxRadius;
 let r = 0;
@@ -8,11 +9,14 @@ let mousePress = false;
 let coolDownSound;
 let playS = false;
 
+
 window.setup = function () {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES)
     frameRate(60);
+    stage = 0;
     coolDownSound = loadSound("Audio/CoolDown.wav")
+    colC.target = 0
 }
 
 window.windowResized = function () {
@@ -31,9 +35,11 @@ window.mousePressed = function () {
             changerDeForme = true
         }, 1000);
     }
+    temps = 1000;
 }
 
 window.mouseReleased = function () {
+    temps = 15000;
     mousePress = false;
     changerDeForme = true
     stopTimer();
@@ -76,16 +82,18 @@ let stage = 0;
 let rSave = 0;
 let col = 0;
 
+let temps = 1000
+
 window.draw = function () {
     
     background(255);
 
     const sceneSize = min(width, height)
 
-	c1.step(deltaTime / 1000) // deltaTime is in milliseconds, we need it in seconds
-    c2.step(deltaTime / 1000)
-    c3.step(deltaTime / 1000)
-    c4.step(deltaTime / 1000)
+	c1.step(deltaTime / temps) // deltaTime is in milliseconds, we need it in seconds
+    c2.step(deltaTime / temps)
+    c3.step(deltaTime / temps)
+    c4.step(deltaTime / temps)
     colC.step(deltaTime / 1000)
     const C1 = c1.position
     const C2 = c2.position
@@ -117,11 +125,15 @@ window.draw = function () {
             }
             setTimeout(() => {
                 colC.target = 0
-            }, 500);
+            }, 1000);
             console.log("cercle")
             fill(ColCircle,0,0)
             noStroke()
             circle(0, 0, objSize)
+            setTimeout(() => {
+              noLoop();
+               sendSequenceNextSignal();
+            }, 1000);
             break;
     }
 
@@ -177,5 +189,4 @@ function stopTimer(){
 
 }
 
-
-
+;;;

@@ -1,4 +1,3 @@
-;;;
 import { SpringNumber } from "../../shared/spring.js"
 import { sendSequenceNextSignal } from "../../shared/sequenceRunner.js"
 
@@ -9,10 +8,8 @@ const strokeW = 20
 let objSize = sceneSize / 2
 
 let mouseDrag = false
-let stageSketch3 = 0;
-let stageSketch32 = 0;
-
-let tuto1;
+let stage = 0;
+let stage2 = 0;
 
 const springLine = new SpringNumber({
 	position: 0, // start position
@@ -35,8 +32,6 @@ window.setup = function () {
 	objSize = sceneSize / 2;
 	springLine.position = 0
 	springLineY.position = 0
-
-	tuto1 = loadImage("Images/Touches.png")
 }
 
 window.windowResized = function () {
@@ -54,65 +49,37 @@ window.mouseReleased = function(){
 }
 
 window.mousePressed = function () {
-	if(allstageSketch3 == 1)
+	if(stage == 4)
 	{
 		clickSound.play();
+		stage = 5;
 		linesScalesX.target = objSize;
 		linesScalesY.target = objSize;
 		gridCol.target = 0;
-		setTimeout(() => {
-			noLoop();
-			 sendSequenceNextSignal();
-		  }, 1500);
 	}
 }
 
 window.keyPressed = function () {
-	tuto1Bool = false;
 	if(canClick)
 	{
 		if (keyCode === LEFT_ARROW) {
-			if(stageSketch3 <= 0)
+			if(stage <= 0 || stage >= 5)
 			{
 				return;
 			}
 			clickSound.play();
-			stageSketch3--;
+			stage--;
 			back = true;
 			//canClick = false;
 			timeout();
 		}
 		else if(keyCode === RIGHT_ARROW){
-			if(stageSketch3 >= 2)
+			if(stage >= 4)
 			{
 				return;
 			}
 			clickSound.play();
-			stageSketch3++;
-			back = false;
-			//canClick = false;
-			timeout();
-		}
-
-		if(keyCode === DOWN_ARROW)
-		{
-			if(stageSketch32 <= 0)
-			{
-				return;
-			}
-			clickSound.play();
-			stageSketch32--;
-			back = true;
-			//canClick = false;
-			timeout();
-		}
-		else if(keyCode === UP_ARROW){
-			if(stageSketch32 >= 2)
-			{
-				return;
-			}
-			clickSound.play();
-			stageSketch32++;
+			stage++;
 			back = false;
 			//canClick = false;
 			timeout();
@@ -132,23 +99,10 @@ window.keyPressed = function () {
 let back = false;
 let centerX = window.innerWidth / 2;
 let centerY = window.innerHeight / 2;
-let allstageSketch3 = 0;
-
-let tuto1Bool = true;
   
 window.draw = function () {
 
-
 	background(255);
-
-	if(tuto1Bool)
-	{
-		push()
-		translate(windowWidth/2 - 92,windowHeight - 150)
-		scale(0.5)
-		image(tuto1, 0,0);
-		pop()
-	}
 
 	springLine.step(deltaTime / 1000)
 	springLineY.step(deltaTime / 1000)
@@ -158,132 +112,126 @@ window.draw = function () {
 	let x = springLine.position
 	let y = springLineY.position
 
-	switch(allstageSketch3){
+	switch(stage){
 		case 0:
-			switch(stageSketch3){
-				case 0:
-					springLine.target = 0
-					line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
-					line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
-					break;
-				case 1:
-					springLine.target = objSize/4
-					if(back){
-		
-						//Region Static
-						line(centerX + objSize/4, centerY - objSize / 2, centerX + objSize/4, centerY + objSize / 2)
-						line(centerX - objSize/4, centerY - objSize / 2, centerX - objSize/4, centerY + objSize / 2)
-						//---
-		
-						//Animated
-						line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
-						line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
-						//---
-					}
-					else
-					{
-						//Animated
-						line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
-						line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
-						//---
-					}
-					break;
-				case 2:
-					springLine.target = objSize/2
-					if(back)
-					{
-						//Region Static
-						line(centerX + objSize/4, centerY - objSize / 2, centerX + objSize/4, centerY + objSize / 2)
-						line(centerX - objSize/4, centerY - objSize / 2, centerX - objSize/4, centerY + objSize / 2)
-						//---
-		
-						//Animated
-						line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
-						line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
-						//---
-					}
-					else
-					{
-						line(centerX + objSize / 4, centerY - objSize / 2, centerX +  objSize / 4, centerY + objSize / 2)
-						line(centerX -  objSize / 4, centerY - objSize / 2, centerX -  objSize / 4, centerY + objSize / 2)
-		
-						line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
-						line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
-					}
-					break;
-			}
-		
-			switch(stageSketch32){
-				case 0:
-					springLineY.target = 0
-					if(back){
-		
-						line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
-						line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
-					}
-					else
-					{
-						line(centerX + y, centerY - objSize / 2, centerX + y, centerY + objSize / 2)
-						line(centerX - y, centerY - objSize / 2, centerX - y, centerY + objSize / 2)
-					}
-					break;
-				case 1:
-					springLineY.target = objSize/4
-					if(back)
-					{
-						line(centerX - objSize / 2, centerY - objSize/4, centerX + objSize / 2, centerY - objSize/4)
-						line(centerX - objSize / 2, centerY + objSize/4, centerX + objSize / 2, centerY + objSize/4)
-						//Animated
-						line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
-						line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
-						//---
-					}
-					else
-					{
-						//Animated
-						line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
-						line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
-						//---
-					}
-					break;
-				case 2:
-					//lineFullX();
-					springLineY.target = objSize/2
-					//#region lines
-					if(back)
-					{
-						line(centerX - objSize / 2, centerY - objSize/4, centerX + objSize / 2, centerY - objSize/4)
-						line(centerX - objSize / 2, centerY + objSize/4, centerX + objSize / 2, centerY + objSize/4)
-						//Animated
-						line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
-						line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
-					}
-					else{
-						//Static
-						line(centerX - objSize / 2, centerY - objSize/4, centerX + objSize / 2, centerY - objSize/4)
-						line(centerX - objSize / 2, centerY + objSize/4, centerX + objSize / 2, centerY + objSize/4)
-						//---
-						//Animated
-						line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
-						line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
-						//---
-					}
-					//#endregion
-					break;
-			}
-			cross(centerX,centerY);
-			if(stageSketch3 == 2 && stageSketch32 == 2)
-			{
-				setTimeout(() => {
-					allstageSketch3 =1;
-				}, 500);
-			}
+			springLine.target = 0
+			cross(centerX,centerY)
+			line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
+			line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
 			break;
-	case 1:
-		fullLinesXY();
-		break;
+		case 1:
+			springLine.target = objSize/4
+			cross(centerX,centerY)
+			//#region lines
+			if(back){
+
+				//Region Static
+				line(centerX + objSize/4, centerY - objSize / 2, centerX + objSize/4, centerY + objSize / 2)
+				line(centerX - objSize/4, centerY - objSize / 2, centerX - objSize/4, centerY + objSize / 2)
+				//---
+
+				//Animated
+				line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
+				line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
+				//---
+			}
+			else
+			{
+				//Animated
+				line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
+				line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
+				//---
+			}
+			//#endregion
+			break;
+		case 2:
+			cross(centerX,centerY)
+			springLine.target = objSize/2
+			springLineY.target = 0
+			//#region lines
+			if(back)
+			{
+				//Static
+				lineFullX();
+				//---
+				//Animated
+				line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
+				line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
+				//---
+			}
+			else
+			{
+				//Static
+				line(centerX + objSize/4, centerY - objSize / 2, centerX + objSize/4, centerY + objSize / 2)
+				line(centerX - objSize/4, centerY - objSize / 2, centerX - objSize/4, centerY + objSize / 2)
+				//---
+
+				line(centerX + x, centerY - objSize / 2, centerX + x, centerY + objSize / 2)
+				line(centerX - x, centerY - objSize / 2, centerX - x, centerY + objSize / 2)
+			}
+			//#endregion
+			break;
+		case 3:
+			//Static
+			lineFullX();
+			//---
+			springLineY.target = objSize/4
+			//#region lines
+			if(back)
+			{
+				line(centerX - objSize / 2, centerY - objSize/4, centerX + objSize / 2, centerY - objSize/4)
+				line(centerX - objSize / 2, centerY + objSize/4, centerX + objSize / 2, centerY + objSize/4)
+				//Animated
+				line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
+				line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
+				//---
+			}
+			else
+			{
+				//Animated
+				line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
+				line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
+				//---
+			}
+			//#endregion
+			break;
+		case 4:
+			lineFullX();
+			springLineY.target = objSize/2
+			//#region lines
+			if(back)
+			{
+				//Static
+				lineFullX();
+				//---
+				//Animated
+				line(centerX - objSize / 2, centerY - objSize/4, centerX + objSize / 2, centerY - objSize/4)
+				line(centerX - objSize / 2, centerY + objSize/4, centerX + objSize / 2, centerY + objSize/4)
+				//---
+			}
+			else{
+				//Static
+				line(centerX - objSize / 2, centerY - objSize/4, centerX + objSize / 2, centerY - objSize/4)
+				line(centerX - objSize / 2, centerY + objSize/4, centerX + objSize / 2, centerY + objSize/4)
+				//---
+				//Animated
+				line(centerX - objSize / 2, centerY - y, centerX + objSize / 2, centerY - y)
+				line(centerX - objSize / 2, centerY + y, centerX + objSize / 2, centerY + y)
+				//---
+			}
+			//#endregion
+			break;
+		case 5:
+			fullLinesXY();
+			console.log("5");
+			break;
+	}
+
+	switch(stage2){
+		
+	}
 	//grid(centerX,centerY)
-	}	
+
 }
 
 const linesScalesX = new SpringNumber({
@@ -303,6 +251,7 @@ const gridCol = new SpringNumber({
 	frequency: 1, // oscillations per second (approximate)
 	halfLife: 0.1 // time until amplitude is halved
 })
+
 
 
 function fullLinesXY(){
@@ -405,5 +354,3 @@ function cross(cX,cY){
 	line(cX - objSize / 2, cY, cX + objSize / 2, cY)
 	line(cX, cY - objSize / 2, cX, cY + objSize / 2)
 }
-
-;;;
