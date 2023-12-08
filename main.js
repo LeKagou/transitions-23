@@ -6,10 +6,10 @@ const emptySequence = [
 ];
 
 const exampleSequence = [
-    "sketches/Day1",
-    "sketches/Day2",
-    "sketches/Day3",
-    "sketches/Day4",
+    "sketches/daniel-day1",
+    "sketches/daniel-day2",
+    "sketches/daniel-day3",
+    "sketches/daniel-day4"
 ];
 
 loadSequenceMetadata(exampleSequence).then(sequenceData => {
