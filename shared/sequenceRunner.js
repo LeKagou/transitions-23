@@ -99,7 +99,15 @@ export async function runRandomSequence(urls) {
             link.getAttribute("student-name") === currentStudent
           )
         );
-      nextSequence();
+      // remove all iframes
+      main.querySelectorAll("iframe").forEach((iframe) => {
+        main.removeChild(iframe);
+      });
+
+      // load First if random else load first of student
+      const index = urls.findIndex((item) => item.student === currentStudent);
+      currentSequence = currentStudent === "random" ? 0 : index;
+      loadFirst();
     }
   });
 
@@ -120,27 +128,46 @@ export async function runRandomSequence(urls) {
   const studentList = document.getElementById("studentList");
   studentList.innerHTML = `<ul><li class="student link selected" student-name="random">Random</li>${ulInnerHTML}</ul>`;
 
-  // Load the first iframe at beginning
-  const first = {
-    url: urls[0].url,
-    iframe: await loadIframe(urls[currentSequence].url, main),
-  };
+  let firstIframe;
+  let transition;
+  let previousSketch = null;
 
-  if (first) {
-    first.iframe.style = "z-index:99";
-    first.iframe.src = first.iframe.src;
+  async function loadFirst() {
+    firstIframe = true;
+    // Load the first iframe at beginning
+    const first = {
+      url: urls[currentSequence].url,
+      iframe: await loadIframe(urls[currentSequence].url, main),
+    };
+
+    if (first) {
+      first.iframe.style = "z-index:99";
+      first.iframe.src = first.iframe.src;
+    }
+
+    nextSequence();
   }
 
-  let transition;
-
   // First
-  setNext(urls[0]);
+  loadFirst();
 
   async function setNext(nextSketch) {
+    if (!firstIframe) {
+      main.removeChild(main.querySelector("iframe"));
+      main.querySelector("iframe").style = "z-index:99";
+    }
+
+    firstIframe = false;
+
     const next = {
       url: nextSketch.url,
       iframe: await loadIframe(nextSketch.url, main),
     };
+
+    if (next) {
+      next.iframe.style = "z-index:-99";
+      next.iframe.src = next.iframe.src;
+    }
 
     //set timeout to fade out studentName
     clearTimeout(transition);
@@ -150,8 +177,8 @@ export async function runRandomSequence(urls) {
     }, 3000);
 
     // only show student name if currentStudent is random
-    if (nextSketch.student && currentStudent == "random") {
-      studentName.innerHTML = nextSketch.student;
+    if (previousSketch.student && currentStudent == "random") {
+      studentName.innerHTML = previousSketch.student;
       studentName.style.opacity = "1";
     } else {
       studentName.innerHTML = "";
@@ -164,21 +191,19 @@ export async function runRandomSequence(urls) {
         ? urls
         : urls.filter((seq) => seq.student === currentStudent);
 
-    const currentSequenceObject = urls[currentSequence];
+    const currentSequenceObject = previousSketch;
     const currentSequenceIndex = sequencesToUse.findIndex(
       (seq) => seq === currentSequenceObject
     );
 
-    index.innerHTML = `<div class="link">${currentSequenceIndex + 1}/${sequencesToUse.length
-      }</div>`;
-
-    if (next) {
-      next.iframe.style = "z-index:-99";
-      next.iframe.src = next.iframe.src;
-    }
+    index.innerHTML = `<div class="link">${currentSequenceIndex + 1}/${
+      sequencesToUse.length
+    }</div>`;
   }
 
   function nextSequence() {
+    previousSketch = urls[currentSequence];
+
     const nextSequence = selectNextSequence(
       urls[currentSequence].end,
       urls,
@@ -186,20 +211,12 @@ export async function runRandomSequence(urls) {
     );
     currentSequence = nextSequence;
     setNext(urls[nextSequence]);
-
-    // remove first iframe on main
-    main.removeChild(main.querySelector("iframe"));
-    main.querySelector("iframe").style = "z-index:99";
   }
 
   window.addEventListener(
     "message",
     async (event) => {
       if (event.data === "finished") {
-        // toggle the iframes
-        // main.removeChild(main.querySelector("iframe")); // Remove the first iframe
-        // main.querySelector("iframe").style = "z-index:99";
-
         nextSequence();
       }
     },
@@ -243,27 +260,24 @@ export function sendSequenceNextSignal() {
   window.parent.postMessage("finished", "*");
 }
 
-
-
 export async function loadSequenceMetadata(urls) {
+  let sequenceData = await Promise.all(
+    urls.map(async (url) => {
+      const infoUrl = url + "/info.json";
+      try {
+        const response = await fetch(infoUrl);
+        const data = await response.json();
+        return Object.assign(
+          {},
+          {
+            url: url,
+          },
+          data
+        );
+      } catch (e) {}
+    })
+  );
+  sequenceData = sequenceData.filter((o) => o !== undefined);
 
-  let sequenceData = await Promise.all(urls.map(async url => {
-
-    const infoUrl = url + "/info.json"
-    try {
-
-      const response = await fetch(infoUrl)
-      const data = await response.json()
-      return Object.assign({},
-        {
-          url: url
-        }, data)
-    }
-    catch (e) {
-
-    }
-  }))
-  sequenceData = sequenceData.filter(o => o !== undefined)
-
-  return sequenceData
+  return sequenceData;
 }
