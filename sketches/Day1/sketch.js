@@ -7,15 +7,20 @@ let rotSave = 0;
 let mousePress = false;
 
 let coolDownSound;
+let windSound;
 let playS = false;
 
+
+window.preload= function () {
+    coolDownSound = createAudio("Audio/CoolDown.wav")
+    windSound = createAudio("Audio/wind.mp3")
+  }
 
 window.setup = function () {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES)
     frameRate(60);
     stage = 0;
-    coolDownSound = loadSound("Audio/CoolDown.wav")
     colC.target = 0
 }
 
@@ -24,6 +29,8 @@ window.windowResized = function () {
 }
 
 window.mousePressed = function () {
+    windSound.play();
+    windSound.loop();
     mousePress = true;
     if(timeKeeper > 0)
     {
@@ -112,20 +119,24 @@ window.draw = function () {
     translate(centerX, centerY);
     rotate(rSave += timeKeeper / 20);
     fill(col,0,0)
+    windSound.volume(1 * timeKeeper / 700)
+    coolDownSound.volume(0.25)
     switch(stage)
     {
         case 0:
             rect(0, 0, objSize, objSize,C1,C2,C3,C4);
             break;
         case 1:
+            windSound.volume(0)
             if(playS == false)
             {
                 coolDownSound.play();
+                windSound.stop();
                 playS = true;
             }
             setTimeout(() => {
                 colC.target = 0
-            }, 1000);
+            }, 100);
             console.log("cercle")
             fill(ColCircle,0,0)
             noStroke()
