@@ -12,6 +12,12 @@ let stageSketch4 = 0;
 let inSound;
 let outSound;
 
+let coolDownSound;
+
+window.preload= function () {
+	coolDownSound = createAudio("Audio/FinalSound.wav")
+  }
+
 
 window.setup = function () {
 	createCanvas(windowWidth, windowHeight);
@@ -124,6 +130,12 @@ window.draw = function () {
 
 			SpringGrid.target = 0;
 
+			if(finalSound == 0)
+			{
+				coolDownSound.play()
+				finalSound = 1;
+			}
+
 			push();
 			noStroke()
 			fill(0,0,0,sG)
@@ -138,6 +150,8 @@ window.draw = function () {
 			break;
 	}
 }
+
+let finalSound = 0;
 
 class Square{
 	

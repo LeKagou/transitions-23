@@ -12,7 +12,7 @@ let playS = false;
 
 
 window.preload= function () {
-    coolDownSound = createAudio("Audio/CoolDown.wav")
+    coolDownSound = createAudio("Audio/FinalSound.wav")
     windSound = createAudio("Audio/wind.mp3")
   }
 
@@ -81,6 +81,12 @@ const colC = new SpringNumber({
 	halfLife: 0.1 // time until amplitude is halved
 })
 
+const soundVolume = new SpringNumber({
+	position: 1, // start position
+	frequency: 1, // oscillations per second (approximate)
+	halfLife: 0.1 // time until amplitude is halved
+})
+
 var timer = 0;
 var timeKeeper = 0;
 var changerDeForme = false;
@@ -101,10 +107,12 @@ window.draw = function () {
     c3.step(deltaTime / temps)
     c4.step(deltaTime / temps)
     colC.step(deltaTime / 1000)
+    soundVolume.step(deltaTime / 1000)
     const C1 = c1.position
     const C2 = c2.position
     const C3 = c3.position
     const C4 = c4.position
+    const sV = soundVolume.position;
 
     const ColCircle  = colC.position
 
@@ -117,20 +125,23 @@ window.draw = function () {
     rectMode(CENTER)
     translate(centerX, centerY);
     rotate(rSave += timeKeeper / 20);
-    windSound.volume(1 * timeKeeper / 700)
     coolDownSound.volume(0.25)
+    windSound.volume(1 * timeKeeper / 700)
     switch(stage)
     {
         case 0:
+            console.log(windSound.volume())
             fill(col,0,0)
+            noStroke()
             rect(0, 0, objSize, objSize,C1,C2,C3,C4);
             break;
         case 1:
-            windSound.volume(0)
+
+            //timeKeeper--;
             if(playS == false)
             {
                 coolDownSound.play();
-                windSound.stop();
+               windSound.stop();
                 playS = true;
             }
             setTimeout(() => {

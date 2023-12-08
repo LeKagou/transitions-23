@@ -14,6 +14,12 @@ let stageSketch32 = 0;
 
 let tuto1;
 
+let coolDownSound;
+
+window.preload= function () {
+	coolDownSound = createAudio("Audio/FinalSound.wav")
+  }
+
 const springLine = new SpringNumber({
 	position: 0, // start position
 	frequency: 4, // oscillations per second (approximate)
@@ -281,9 +287,9 @@ window.draw = function () {
 			break;
 	case 1:
 		fullLinesXY();
-		if(!clickSound.isPlaying() && soundIndex < 3)
+		if(!clickSound.isPlaying() && soundIndex < 1)
 		{
-			clickSound.play();
+			coolDownSound.play();
 			soundIndex++;
 		}
 		linesScalesX.target = objSize;

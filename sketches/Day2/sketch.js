@@ -21,6 +21,8 @@ let linePickSound;
 let lineReleaseSound;
 
 
+let coolDownSound;
+
 const springCircle = new SpringNumber({
 	position: 500, // start position
 	frequency: 1.5, // oscillations per second (approximate)
@@ -45,6 +47,9 @@ const springCol = new SpringNumber({
 	halfLife: 0.1 // time until amplitude is halved
 })
 
+window.preload= function () {
+  coolDownSound = createAudio("Audio/FinalSound.wav")
+}
 
 window.setup = function () {
 
@@ -118,6 +123,13 @@ window.mouseReleased = function (){
   else if(stageSketch2 == 3 && d >= 300){
     figerTrait2 = true;
     stageSketch2 = 3;
+    if(finalSound == 0)
+    {
+      setTimeout(() => {
+          coolDownSound.play();
+      }, 500);
+      finalSound = 1;
+    }
     setTimeout(() => {
       noLoop();
        sendSequenceNextSignal();
@@ -129,6 +141,9 @@ window.mouseReleased = function (){
 
   mouseDragState = false;
 }
+
+
+let finalSound = 0;
 
 window.draw = function () {
 
@@ -200,7 +215,6 @@ window.draw = function () {
 
       console.log(x, springX.position, springX.target)
 
-
       push()
       strokeWeight(strokeW);
       line(centerX, centerY - objSize / 2, centerX, centerY + objSize / 2)
@@ -242,7 +256,6 @@ window.draw = function () {
       pop()*/
     }
   }
-
 
 }
 
