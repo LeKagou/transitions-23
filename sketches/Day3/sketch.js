@@ -63,13 +63,13 @@ window.mousePressed = function () {
 		setTimeout(() => {
 			noLoop();
 			 sendSequenceNextSignal();
-		  }, 1500);
+		  }, 2000);
 	}
 }
 
 window.keyPressed = function () {
 	tuto1Bool = false;
-	if(canClick)
+	if(canClick && allstageSketch3!=1)
 	{
 		if (keyCode === LEFT_ARROW) {
 			if(stageSketch3 <= 0)
@@ -281,10 +281,24 @@ window.draw = function () {
 			break;
 	case 1:
 		fullLinesXY();
+		if(!clickSound.isPlaying() && soundIndex < 3)
+		{
+			clickSound.play();
+			soundIndex++;
+		}
+		linesScalesX.target = objSize;
+		linesScalesY.target = objSize;
+		gridCol.target = 0;
+		setTimeout(() => {
+			noLoop();
+			 sendSequenceNextSignal();
+		  }, 2000);
 		break;
 	//grid(centerX,centerY)
 	}	
 }
+
+let soundIndex = 0;
 
 const linesScalesX = new SpringNumber({
 	position: 0, // start position

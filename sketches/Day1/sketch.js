@@ -21,7 +21,6 @@ window.setup = function () {
     angleMode(DEGREES)
     frameRate(60);
     stage = 0;
-    colC.target = 0
 }
 
 window.windowResized = function () {
@@ -118,12 +117,12 @@ window.draw = function () {
     rectMode(CENTER)
     translate(centerX, centerY);
     rotate(rSave += timeKeeper / 20);
-    fill(col,0,0)
     windSound.volume(1 * timeKeeper / 700)
     coolDownSound.volume(0.25)
     switch(stage)
     {
         case 0:
+            fill(col,0,0)
             rect(0, 0, objSize, objSize,C1,C2,C3,C4);
             break;
         case 1:
